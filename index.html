@@ -172,7 +172,7 @@
   const newUsername = document.getElementById('newUsername').value.trim();
   const newPassword = document.getElementById('newPassword').value.trim();
 
-  const res = await fetch('http://localhost:4002/api/signup', {
+  const res = await fetch('https://login-1-1410.onrender.com/api/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: newUsername, password: newPassword })
@@ -194,7 +194,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
 
-  const res = await fetch('http://localhost:4002/api/login', {
+  const res = await fetch('https://login-1-1410.onrender.com/api/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
