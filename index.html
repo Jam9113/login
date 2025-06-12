@@ -124,7 +124,7 @@
     <input type="password" id="password" placeholder="Password" required>
 
     <div class="options">
-      <label><input type="checkbox" id="togglePassword"> Show Password</label><br>
+      <label><input type="checkbox" id="togglePasswordLogin"> Show Password</label><br>
       <label><input type="checkbox" id="rememberMe"> Remember Me</label>
     </div>
 
@@ -138,15 +138,22 @@
     <span class="modal-close" onclick="closeSignup()">×</span>
     <img src="image.png" alt="PIKIFI Logo" class="logo">
     <h3>Sign Up</h3>
+    <p>Create a new account</p>
+    <input type="text" id="FullName" placeholder="Full Name" required>
+    <input type="text" id="email" placeholder="Email Address" required>
+    <input type="text" id="department" placeholder="Department" required>
     <input type="text" id="newUsername" placeholder="New Username" required>
     <input type="password" id="newPassword" placeholder="New Password" required>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+    <input type="text" id="phoneNumber" placeholder="Phone Number (optional)">
+    <div class="options">
+      <label><input type="checkbox" id="togglePasswordSignup"> Show Password</label>
+    </div>
     <button onclick="registerUser()">Register</button>
   </div>
 </div>
 
 <script>
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-
   window.onload = function () {
     const storedUsername = localStorage.getItem('username');
     const storedPassword = localStorage.getItem('password');
@@ -157,9 +164,15 @@
     }
   };
 
-  document.getElementById('togglePassword').addEventListener('change', function () {
+  document.getElementById('togglePasswordLogin').addEventListener('change', function () {
     document.getElementById('password').type = this.checked ? 'text' : 'password';
   });
+
+  document.getElementById('togglePasswordSignup').addEventListener('change', function () {
+    document.getElementById('newPassword').type = this.checked ? 'text' : 'password';
+    document.getElementById('confirmPassword').type = this.checked ? 'text' : 'password';
+  });
+
   function openSignup() {
     document.getElementById('signupModal').style.display = 'flex';
   }
@@ -168,48 +181,86 @@
     document.getElementById('signupModal').style.display = 'none';
   }
 
- async function registerUser() {
-  const newUsername = document.getElementById('newUsername').value.trim();
-  const newPassword = document.getElementById('newPassword').value.trim();
+  async function registerUser() {
+    const newName = document.getElementById('FullName').value.trim();
+    const NewEmailAdress = document.getElementById('email').value.trim();
+    const NewDepartment = document.getElementById('department').value.trim();
+    const newUsername = document.getElementById('newUsername').value.trim();
+    const newPassword = document.getElementById('newPassword').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+    const phoneNumber = document.getElementById('phoneNumber').value.trim();
 
-  const res = await fetch('https://login-1-1410.onrender.com/api/signup', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: newUsername, password: newPassword })
-  });
+    if (!newName || !NewEmailAdress || !NewDepartment || !newUsername || !newPassword || !confirmPassword) {
+      alert('Please fill in all required fields.');
+      return;
+    }
 
-  const data = await res.json();
+    if (newPassword !== confirmPassword) {
+      alert('Passwords do not match.');
+      return;
+    }
 
-  if (res.ok) {
-    alert(data.message);
-    closeSignup();
-  } else {
-    alert(data.message);
+    try {
+      const res = await fetch('http://localhost:4002/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newName,
+          email: NewEmailAdress,
+          department: NewDepartment,
+          username: newUsername,
+          password: newPassword,
+          confirmPassword: confirmPassword,
+          phone: phoneNumber
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+        closeSignup();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      alert('Server error. Please try again later.');
+    }
   }
-}
 
-document.getElementById('loginForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-  const res = await fetch('https://login-1-1410.onrender.com/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
+    try {
+      const res = await fetch('http://localhost:4002/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        if (document.getElementById('rememberMe').checked) {
+          localStorage.setItem('username', username);
+          localStorage.setItem('password', password);
+        } else {
+          localStorage.removeItem('username');
+          localStorage.removeItem('password');
+        }
+
+        alert('Welcome ' + username + '!');
+        window.location.href = 'dashboard.html';
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      alert('Server error. Please try again later.');
+    }
   });
-
-  const data = await res.json();
-
-  if (res.ok) {
-    alert('Welcome ' + username + '!');
-    window.location.href = 'dashboard.html' ;
-  } else {
-    alert(data.message);
-  }
-});
-
 </script>
 
 </body>
