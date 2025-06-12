@@ -6,7 +6,6 @@ exports.signup = async (req, res) => {
   const { name, email, department, username, password, confirmPassword } = req.body;
 
   try {
-    // Validate all fields
     if (!name || !email || !department || !username || !password || !confirmPassword) {
       return res.status(400).json({ message: 'All fields are required.' });
     }
