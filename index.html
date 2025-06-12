@@ -201,7 +201,7 @@
     }
 
     try {
-      const res = await fetch('http://localhost:4002/api/signup', {
+      const res = await fetch('https://login-pikifi.onrender.com/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -235,7 +235,7 @@
     const password = document.getElementById('password').value.trim();
 
     try {
-      const res = await fetch('http://localhost:4002/api/login', {
+      const res = await fetch('https://login-pikifi.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
