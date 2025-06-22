@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 
 exports.signup = async (req, res) => {
-  const { name, email, department, username, password, confirmPassword } = req.body;
+  const { name, email, department, username, password, confirmPassword, role = 'employee' } = req.body;
 
   try {
     if (!name || !email || !department || !username || !password || !confirmPassword) {
@@ -26,7 +26,8 @@ exports.signup = async (req, res) => {
       email,
       department,
       username,
-      password: hashedPassword
+      password: hashedPassword,
+      role 
     });
 
     await newUser.save();
@@ -37,6 +38,7 @@ exports.signup = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 
 exports.login = async (req, res) => {
@@ -57,10 +59,16 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    res.status(200).json({ message: `Welcome, ${user.name}!` });
+
+    res.status(200).json({
+      message: `Welcome, ${user.name}!`,
+      role: user.role
+    });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
